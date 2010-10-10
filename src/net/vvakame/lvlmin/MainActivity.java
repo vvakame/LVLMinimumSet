@@ -46,7 +46,7 @@ public class MainActivity extends Activity {
 			if (bindResult) {
 				Log.d(TAG, "success!");
 			} else {
-				Log.e(TAG, "Could not bind to service.");
+				Log.e(TAG, "could not bind to service.");
 			}
 		}
 
