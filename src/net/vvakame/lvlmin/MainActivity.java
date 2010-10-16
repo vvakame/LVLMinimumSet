@@ -8,9 +8,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.os.RemoteException;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.vending.licensing.ILicenseResultListener;
 import com.android.vending.licensing.ILicensingService;
@@ -23,6 +26,21 @@ public class MainActivity extends Activity {
 
 	private int mNonce;
 	private String mPackageName;
+
+	Handler mToastHandler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			Toast.makeText(self, "Not licensed!", Toast.LENGTH_LONG).show();
+			mExitHandler.sendEmptyMessageDelayed(0, 2000);
+		}
+	};
+
+	Handler mExitHandler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			System.exit(RESULT_OK);
+		}
+	};
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -97,6 +115,10 @@ public class MainActivity extends Activity {
 			boolean verify = LicensingUtil.verify(responseCode, signedData,
 					signature, self, mPackageName, mNonce);
 			Log.d(TAG, "verify=" + String.valueOf(verify));
+			if (!verify) {
+				mToastHandler.sendEmptyMessage(0);
+				mExitHandler.sendEmptyMessageDelayed(0, 3000);
+			}
 		}
 	}
 }
